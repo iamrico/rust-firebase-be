@@ -1,0 +1,13 @@
+[package]
+name = "hello-rocket"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rocket = "0.5.0-rc.2"
+firebase-rs="2.0.5"
+serde='1.0.147'
+serde_json="1.0"
+tokio = {version='1.21.2', features=['full']}

@@ -1,6 +1,8 @@
 #[macro_use] extern crate rocket;
 use firebase_rs::*;
-use serde::{Serialize, Deserialize};
+use rocket::{
+    serde::{json::Json, Deserialize, Serialize},
+};
 use rocket::form::Form;
 
 #[derive(Serialize, Deserialize, Debug, FromForm)]
@@ -16,7 +18,7 @@ struct Response {
 }
 
 #[post("/", data="<todo_form>")]
-async fn createTodo(todo_form: Form<Task>) -> &'static str {
+async fn createTodo(todo_form: Form<Task>) -> Json<Response> {
     let todo = todo_form.into_inner();
     let task = Task {
         title: todo.title.to_string(),
@@ -25,9 +27,9 @@ async fn createTodo(todo_form: Form<Task>) -> &'static str {
     let firebase_client = Firebase::new("https://todo-58ce6-default-rtdb.asia-southeast1.firebasedatabase.app/").unwrap();
     
     let response = set_task(&firebase_client, &task).await;
-    println!("{:?}", &response.name);
+    let name = &response.name;
 
-    "Hello World"
+    Json(Response { name: name.to_string() })
 }
 
 #[launch]

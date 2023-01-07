@@ -17,7 +17,7 @@ struct Response {
 
 }
 
-#[post("/", data="<todo_form>")]
+#[post("/todo", data="<todo_form>")]
 async fn createTodo(todo_form: Form<Task>) -> Json<Response> {
     let todo = todo_form.into_inner();
     let task = Task {
@@ -34,7 +34,7 @@ async fn createTodo(todo_form: Form<Task>) -> Json<Response> {
 
 #[launch]
 fn rocket() -> _ { 
-    rocket::build().mount("/", routes![createTodo])
+    rocket::build().mount("/todo", routes![createTodo])
 }
 
 

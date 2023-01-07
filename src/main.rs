@@ -28,13 +28,12 @@ async fn createTodo(todo_form: Form<Task>) -> Json<Response> {
     
     let response = set_task(&firebase_client, &task).await;
     let name = &response.name;
-    print!("LOL");
     Json(Response { name: name.to_string() })
 }
 
 #[launch]
 fn rocket() -> _ { 
-    rocket::build().mount("/todo", routes![createTodo])
+    rocket::build().mount("/", routes![createTodo])
 }
 
 

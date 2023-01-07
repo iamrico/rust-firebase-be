@@ -16,12 +16,7 @@ jobs:
 
     steps:
     - name: Install stable toolchain
-      uses: actions-rs/toolchain@v1
-      with:
-        profile: minimal
-        toolchain: 1.62.0
-        target: wasm32-unknown-unknown
-        override: true
+      run: rustup default nightly
     - uses: actions/checkout@v3
     - name: Build
       run: cargo build --verbose

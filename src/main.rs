@@ -24,7 +24,14 @@ struct DeleteRequest {
 
 #[derive(Serialize, Deserialize, Debug)]
 struct GetTodoResponse {
-    todos: Vec<Task>
+    todos: Vec<TaskResponse>
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+struct TaskResponse {
+    title: String,
+    description: String,
+    id: String
 }
 
 #[post("/todo", data="<todo_form>")]
@@ -57,9 +64,14 @@ async fn listTodo() -> Json<GetTodoResponse> {
     let firebase_client = Firebase::new("https://todo-58ce6-default-rtdb.asia-southeast1.firebasedatabase.app/").unwrap();
 
     let tasks = get_tasks(&firebase_client).await;
+    let mut vec = Vec::new();
 
-    let newArray = tasks.values().cloned().collect();
-    Json(GetTodoResponse{todos: newArray})
+    for (key, value) in &tasks {
+        println!("{}", key);
+        let newValue = value.clone();
+        vec.push(TaskResponse{ title: newValue.title, description: newValue.description, id: key.to_string() })
+    }
+    Json(GetTodoResponse{todos: vec})
 }
 #[launch]
 fn rocket() -> _ { 

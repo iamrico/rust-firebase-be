@@ -123,3 +123,17 @@ async fn get_tasks(firebase_client: &Firebase) -> HashMap<String, Task>{
 fn string_to_response(s: &str) -> HttpResponse {
     serde_json::from_str(s).unwrap()
 }
+
+#[cfg(test)]
+mod test {
+    use super::rocket;
+    use rocket::local::blocking::Client;
+    use rocket::http::Status;
+
+    #[test]
+    fn get_tasks() {
+        let client = Client::tracked(rocket()).expect("valid rocket instance");
+        let mut response = client.get(uri!(super::listTodo)).dispatch();
+        assert_eq!(response.status(), Status::Ok);
+    }
+}

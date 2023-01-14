@@ -28,5 +28,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+    - name: Install stable toolchain
+      run: rustup default nightly
+    - uses: actions/checkout@v3
     - name: Run tests
       run: cargo test --verbose

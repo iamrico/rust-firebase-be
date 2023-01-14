@@ -5,6 +5,28 @@ use rocket::{
 };
 use rocket::form::Form;
 use std::collections::HashMap;
+use rocket::http::Header;
+use rocket::{Request, Response};
+use rocket::fairing::{Fairing, Info, Kind};
+
+pub struct CORS;
+
+#[rocket::async_trait]
+impl Fairing for CORS {
+    fn info(&self) -> Info {
+        Info {
+            name: "Attaching CORS headers to responses",
+            kind: Kind::Response
+        }
+    }
+
+    async fn on_response<'r>(&self, _request: &'r Request<'_>, response: &mut Response<'r>) {
+        response.set_header(Header::new("Access-Control-Allow-Origin", "*"));
+        response.set_header(Header::new("Access-Control-Allow-Methods", "POST, GET, PATCH, OPTIONS"));
+        response.set_header(Header::new("Access-Control-Allow-Headers", "*"));
+        response.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
+    }
+}
 
 #[derive(Serialize, Deserialize, Debug, FromForm, Clone)]
 struct Task {
@@ -75,7 +97,7 @@ async fn listTodo() -> Json<GetTodoResponse> {
 }
 #[launch]
 fn rocket() -> _ { 
-    rocket::build().mount("/", routes![createTodo, deleteTask, listTodo])
+    rocket::build().attach(CORS).mount("/", routes![createTodo, deleteTask, listTodo])
 }
 
 

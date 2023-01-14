@@ -13,7 +13,7 @@ struct Task {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-struct Response {
+struct HttpResponse {
     name: String
 }
 
@@ -35,7 +35,7 @@ struct TaskResponse {
 }
 
 #[post("/todo", data="<todo_form>")]
-async fn createTodo(todo_form: Form<Task>) -> Json<Response> {
+async fn createTodo(todo_form: Form<Task>) -> Json<HttpResponse> {
     let todo = todo_form.into_inner();
     let task = Task {
         title: todo.title.to_string(),
@@ -45,18 +45,18 @@ async fn createTodo(todo_form: Form<Task>) -> Json<Response> {
     
     let response = set_task(&firebase_client, &task).await;
     let name = &response.name;
-    Json(Response { name: name.to_string() })
+    Json(HttpResponse { name: name.to_string() })
 }
 
 #[delete("/todo", data="<todo_form>")]
-async fn deleteTask(todo_form: Form<DeleteRequest>) -> Json<Response> {
+async fn deleteTask(todo_form: Form<DeleteRequest>) -> Json<HttpResponse> {
     let todo = todo_form.into_inner();
     let firebase_client = Firebase::new("https://todo-58ce6-default-rtdb.asia-southeast1.firebasedatabase.app/").unwrap();
     let name = todo.name.to_string();
 
     delete_task(&firebase_client, &name).await;
 
-    Json(Response { name: "successful deletion of todo".to_string() })
+    Json(HttpResponse { name: "successful deletion of todo".to_string() })
 }
 
 #[get("/todo")]
@@ -79,7 +79,7 @@ fn rocket() -> _ {
 }
 
 
-async fn set_task(firebase_client: &Firebase, task: &Task) -> Response {
+async fn set_task(firebase_client: &Firebase, task: &Task) -> HttpResponse {
     let firebase = firebase_client.at("tasks");
     let _tasks = firebase.set::<Task>(&task).await;
     
@@ -98,6 +98,6 @@ async fn get_tasks(firebase_client: &Firebase) -> HashMap<String, Task>{
     return tasks.unwrap();
 }
 
-fn string_to_response(s: &str) -> Response {
+fn string_to_response(s: &str) -> HttpResponse {
     serde_json::from_str(s).unwrap()
 }

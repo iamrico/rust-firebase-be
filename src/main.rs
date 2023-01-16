@@ -132,6 +132,7 @@ mod test {
 
     #[test]
     fn get_tasks() {
+        print("hi")
         let client = Client::tracked(rocket()).expect("valid rocket instance");
         let mut response = client.get(uri!(super::listTodo)).dispatch();
         assert_eq!(response.status(), Status::Ok);
